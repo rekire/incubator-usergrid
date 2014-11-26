@@ -556,10 +556,9 @@ i.pictogram {
     margin: 0 5px 0 0;
     font-size: 2.5em;
     height: 17px;
-    line-height: 0.35;
+    line-height: 0;
     overflow:hidden;
     vertical-align: middle;
-    padding: 5px 0 0 0;
     font-style: normal;
     font-weight: 100;
     -webkit-font-smoothing: antialiased;

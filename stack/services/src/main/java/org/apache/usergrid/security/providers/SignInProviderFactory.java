@@ -64,4 +64,12 @@ public class SignInProviderFactory {
         pingIdentityProvider.configure();
         return pingIdentityProvider;
     }
+
+
+    public SignInAsProvider googleplus( Application application ) {
+        GooglePlusProvider googlePlusProviderProvider =
+                new GooglePlusProvider( emf.getEntityManager( application.getUuid() ), managementService );
+        googlePlusProviderProvider.configure();
+        return googlePlusProviderProvider;
+    }
 }

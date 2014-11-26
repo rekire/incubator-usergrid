@@ -199,6 +199,10 @@ public class ApplicationResource extends AbstractContextResource {
             signInAsProvider =
                     signInProviderFactory.foursquare( smf.getServiceManager( applicationId ).getApplication() );
         }
+        else if ( StringUtils.equalsIgnoreCase( siaProvider, "googleplus" ) ) {
+            signInAsProvider =
+                    signInProviderFactory.googleplus( smf.getServiceManager( applicationId ).getApplication() );
+        }
 
         Preconditions
                 .checkArgument( signInAsProvider != null, "No signin provider found by that name: " + siaProvider );
