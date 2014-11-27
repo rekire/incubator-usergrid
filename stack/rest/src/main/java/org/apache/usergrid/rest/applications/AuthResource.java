@@ -100,6 +100,19 @@ public class AuthResource extends AbstractContextResource {
     }
 
 
+    @POST
+    @Path("googleplus")
+    @Consumes(APPLICATION_FORM_URLENCODED)
+    public Response authGPPost( @Context UriInfo ui, @FormParam("gp_access_token") String gp_access_token,
+                                @QueryParam("ttl") long ttl, @QueryParam("callback") @DefaultValue("") String callback )
+            throws Exception {
+
+        logger.info( "AuthResource.authGPPost" );
+
+        return authGP( ui, gp_access_token, ttl, callback );
+    }
+
+
     @GET
     @Path("pingident")
     public Response authPingIdent( @Context UriInfo ui, @QueryParam("ping_access_token") String pingToken,
@@ -184,6 +197,40 @@ public class AuthResource extends AbstractContextResource {
             }
             SignInAsProvider facebookProvider = signInProviderFactory.facebook( services.getApplication() );
             User user = facebookProvider.createOrAuthenticate( fb_access_token );
+
+            if ( user == null ) {
+                return findAndCreateFail( callback );
+            }
+
+            String token = management.getAccessTokenForAppUser( services.getApplicationId(), user.getUuid(), ttl );
+
+            AccessInfo access_info =
+                    new AccessInfo().withExpiresIn( tokens.getMaxTokenAgeInSeconds( token ) ).withAccessToken( token )
+                                    .withProperty( "user", user );
+
+            return Response.status( SC_OK ).type( jsonMediaType( callback ) )
+                           .entity( wrapWithCallback( access_info, callback ) ).build();
+        }
+        catch ( Exception e ) {
+            return generalAuthError( callback, e );
+        }
+    }
+
+
+    @GET
+    @Path("googleplus")
+    public Response authGP( @Context UriInfo ui, @QueryParam("gp_access_token") String gp_access_token,
+                            @QueryParam("ttl") long ttl, @QueryParam("callback") @DefaultValue("") String callback )
+            throws Exception {
+
+        logger.info( "AuthResource.authGP" );
+
+        try {
+            if ( StringUtils.isEmpty( gp_access_token ) ) {
+                return missingTokenFail( callback );
+            }
+            SignInAsProvider googleplusProvider = signInProviderFactory.googleplus( services.getApplication() );
+            User user = googleplusProvider.createOrAuthenticate( gp_access_token );
 
             if ( user == null ) {
                 return findAndCreateFail( callback );
