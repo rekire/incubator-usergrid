@@ -113,7 +113,7 @@ else
 fi
 
 # Make sure the tag does not exist
-if git rev-parse --tags=$current_version >/dev/null 2>&1; then
+if git rev-parse $current_version >/dev/null 2>&1; then
   echo "ERROR: ${current_version} tag exists."
   exit 1
 fi
@@ -126,7 +126,7 @@ fi
 # Create a branch for the release and update the .usergridversion and tag it
 echo "Creating release branch and tag for ${current_version}"
 git checkout -b $current_version
-echo $current_version_tag > .usergridversion
+echo $current_version > .usergridversion
 git add .usergridversion
 git commit -m "Updating .usergridversion to ${current_version}."
 
@@ -173,11 +173,11 @@ if [[ $publish == 1 ]]; then
   svn ci -m "usergrid-${current_version} release"
 
   # Finally delete all release candidate branches
-  for ref in $(git for-each-ref --format='%(refname:short)' 'refs/heads/${current_version}-rc*') do
-    git branch -D ${ref}
-    git push origin --delete ${ref}
-    svn rm ${usergrid_svn_dev_dist_url}/${ref}
-  done
+#  for ref in $(git for-each-ref --format='%(refname:short)' 'refs/heads/${current_version}-rc*') do
+#    git branch -D ${ref} # line 177: syntax error near unexpected token `git'
+#    git push origin --delete ${ref}
+#    svn rm ${usergrid_svn_dev_dist_url}/${ref}
+#  done
 fi
 
 cd ${base_dir}
@@ -190,9 +190,6 @@ echo
 MESSAGE=$(cat <<__EOF__
 To: dev@usergrid.incubator.apache.org
 Subject: [RESULT][VOTE] Release Apache Usergrid ${current_version} (incubating) RC#{rc_tag_version}
-
-All,
-The vote to accept Apache Usergrid ${current_version} RC#{rc_tag_version}
 as the official Apache Usegrid ${current_version} release has passed.
 
 
