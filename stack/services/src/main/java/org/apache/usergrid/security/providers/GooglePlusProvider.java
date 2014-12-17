@@ -48,10 +48,19 @@ public class GooglePlusProvider extends AbstractProvider {
     @Override
     void configure() {
         try {
-            Map config = loadConfigurationFor( "googlePlusProvider" );
-            if ( config != null ) {
-                issuedTo = ( String ) config.get( "issued_to" );
+            String result = "";
+            Properties prop = new Properties();
+            String propFileName = "googleplus.properties";
+
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+
+            if (inputStream != null) {
+                prop.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
+
+            issuedTo = prop.getProperty("issued_to");
         }
         catch ( Exception ex ) {
             ex.printStackTrace();
